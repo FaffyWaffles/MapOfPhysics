@@ -16,16 +16,16 @@ const svg = d3.select("#graph")
 // Define the data structure
 const data = {
     nodes: [
-        { id: "E=mc^2", type: "equation", latex: "\\(E=mc^2\\)" },
-        { id: "c", type: "constant", latex: "\\(c\\)" },
-        { id: "m", type: "variable", latex: "\\(m\\)" },
-        { id: "E", type: "variable", latex: "\\(E\\)" },
-        { id: "F=ma", type: "equation", latex: "\\(F=ma\\)" },
-        { id: "F", type: "variable", latex: "\\(F\\)" },
-        { id: "a", type: "variable", latex: "\\(a\\)" },
-        { id: "p=mv", type: "equation", latex: "\\(p=mv\\)" },
-        { id: "p", type: "variable", latex: "\\(p\\)" },
-        { id: "v", type: "variable", latex: "\\(v\\)" }
+        { id: "E=mc^2", type: "equation", latex: "\\(E=mc^2\\)", description: "Energy-mass equivalence formula by Einstein" },
+        { id: "c", type: "constant", latex: "\\(c\\)", description: "Speed of light in a vacuum" },
+        { id: "m", type: "variable", latex: "\\(m\\)", description: "Mass of an object" },
+        { id: "E", type: "variable", latex: "\\(E\\)", description: "Energy" },
+        { id: "F=ma", type: "equation", latex: "\\(F=ma\\)", description: "Newton's second law of motion" },
+        { id: "F", type: "variable", latex: "\\(F\\)", description: "Force" },
+        { id: "a", type: "variable", latex: "\\(a\\)", description: "Acceleration" },
+        { id: "p=mv", type: "equation", latex: "\\(p=mv\\)", description: "Momentum formula" },
+        { id: "p", type: "variable", latex: "\\(p\\)", description: "Momentum" },
+        { id: "v", type: "variable", latex: "\\(v\\)", description: "Velocity" }
     ],
     links: [
         { source: "E=mc^2", target: "c" },
@@ -129,7 +129,7 @@ function handleMouseOver(event, d) {
                        .attr("id", "tooltip")
                        .attr("font-size", "12px")
                        .attr("fill", "black")
-                       .text(d.type);
+                       .text(d.description);
 }
 
 function handleMouseOut() {
