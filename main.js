@@ -86,6 +86,19 @@ const node = svg.append("g")
                         .on("drag", dragged)
                         .on("end", dragended));
 
+// Debounce function to limit how often a function is called
+function debounce(func, wait) {
+    let timeout;
+    return function(...args) {
+        const context = this;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), wait);
+    };
+}
+
+// Debounced MathJax typeset function
+const debouncedTypeset = debounce(() => MathJax.typesetPromise(), 500);
+
 // Update positions on each tick
 simulation.on("tick", () => {
     link.attr("x1", d => d.source.x)
@@ -97,10 +110,10 @@ simulation.on("tick", () => {
         .attr("cy", d => d.y);
 
     nodeLabels.attr("x", d => d.x + 10)
-              .attr("y", d => d.y - 5)
-              .html(d => `<div class="latex">${d.latex}</div>`);
+              .attr("y", d => d.y - 5);
 
-    MathJax.typeset(); // Render LaTeX equations
+    // Call debounced typeset
+    debouncedTypeset();
 });
 
 // Drag event functions
@@ -124,6 +137,8 @@ function dragended(event, d) {
     d.fy = null;
     // Re-enable mouseover and mouseout events after drag
     d3.selectAll("circle").on("mouseover", handleMouseOver).on("mouseout", handleMouseOut);
+    // Render LaTeX after drag ends
+    MathJax.typesetPromise();
 }
 
 // Tooltip functions
@@ -140,3 +155,6 @@ function handleMouseOver(event, d) {
 function handleMouseOut() {
     d3.select("#tooltip").remove();
 }
+
+// Initial typeset
+MathJax.typesetPromise();
