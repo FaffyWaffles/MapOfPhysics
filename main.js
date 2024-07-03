@@ -55,7 +55,18 @@ const link = svg.append("g")
                 .enter().append("line")
                 .attr("stroke-width", 2);
 
-// Add nodes (circles) to the SVG
+// Add labels to the nodes and render LaTeX
+const nodeLabels = svg.append("g")
+                      .selectAll("foreignObject")
+                      .data(data.nodes)
+                      .enter().append("foreignObject")
+                      .attr("width", 100)
+                      .attr("height", 50)
+                      .attr("x", d => d.x + 10)
+                      .attr("y", d => d.y - 5)
+                      .html(d => `<div class="latex">${d.latex}</div>`);
+
+// Add nodes (circles) to the SVG above the labels
 const node = svg.append("g")
                 .attr("stroke", "#fff")
                 .attr("stroke-width", 1.5)
@@ -68,23 +79,12 @@ const node = svg.append("g")
                     if (d.type === "variable") return "blue";
                     if (d.type === "constant") return "green";
                 })
+                .on("mouseover", handleMouseOver)
+                .on("mouseout", handleMouseOut)
                 .call(d3.drag()
                         .on("start", dragstarted)
                         .on("drag", dragged)
-                        .on("end", dragended))
-                .on("mouseover", handleMouseOver)
-                .on("mouseout", handleMouseOut);
-
-// Add labels to the nodes and render LaTeX
-const nodeLabels = svg.append("g")
-                      .selectAll("foreignObject")
-                      .data(data.nodes)
-                      .enter().append("foreignObject")
-                      .attr("width", 100)
-                      .attr("height", 50)
-                      .attr("x", d => d.x + 10)
-                      .attr("y", d => d.y - 5)
-                      .html(d => `<div class="latex">${d.latex}</div>`);
+                        .on("end", dragended));
 
 // Update positions on each tick
 simulation.on("tick", () => {
@@ -108,6 +108,9 @@ function dragstarted(event, d) {
     if (!event.active) simulation.alphaTarget(0.3).restart();
     d.fx = d.x;
     d.fy = d.y;
+    // Disable mouseover and mouseout events during drag
+    d3.selectAll("circle").on("mouseover", null).on("mouseout", null);
+    d3.select("#tooltip").remove();
 }
 
 function dragged(event, d) {
@@ -119,6 +122,8 @@ function dragended(event, d) {
     if (!event.active) simulation.alphaTarget(0);
     d.fx = null;
     d.fy = null;
+    // Re-enable mouseover and mouseout events after drag
+    d3.selectAll("circle").on("mouseover", handleMouseOver).on("mouseout", handleMouseOut);
 }
 
 // Tooltip functions
