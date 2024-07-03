@@ -42,8 +42,8 @@ const data = {
 
 // Create a force simulation
 const simulation = d3.forceSimulation(data.nodes)
-                     .force("link", d3.forceLink(data.links).id(d => d.id))
-                     .force("charge", d3.forceManyBody())
+                     .force("link", d3.forceLink(data.links).id(d => d.id).distance(100))
+                     .force("charge", d3.forceManyBody().strength(-300))
                      .force("center", d3.forceCenter(width / 2, height / 2));
 
 // Add links (lines) to the SVG
@@ -71,7 +71,9 @@ const node = svg.append("g")
                 .call(d3.drag()
                         .on("start", dragstarted)
                         .on("drag", dragged)
-                        .on("end", dragended));
+                        .on("end", dragended))
+                .on("mouseover", handleMouseOver)
+                .on("mouseout", handleMouseOut);
 
 // Add labels to the nodes
 const nodeLabels = svg.append("g")
@@ -112,4 +114,19 @@ function dragended(event, d) {
     if (!event.active) simulation.alphaTarget(0);
     d.fx = null;
     d.fy = null;
+}
+
+// Tooltip functions
+function handleMouseOver(event, d) {
+    const tooltip = svg.append("text")
+                       .attr("x", d.x + 15)
+                       .attr("y", d.y - 10)
+                       .attr("id", "tooltip")
+                       .attr("font-size", "12px")
+                       .attr("fill", "black")
+                       .text(d.type);
+}
+
+function handleMouseOut() {
+    d3.select("#tooltip").remove();
 }
