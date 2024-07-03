@@ -16,16 +16,16 @@ const svg = d3.select("#graph")
 // Define the data structure
 const data = {
     nodes: [
-        { id: "E=mc^2", type: "equation" },
-        { id: "c", type: "constant" },
-        { id: "m", type: "variable" },
-        { id: "E", type: "variable" },
-        { id: "F=ma", type: "equation" },
-        { id: "F", type: "variable" },
-        { id: "a", type: "variable" },
-        { id: "p=mv", type: "equation" },
-        { id: "p", type: "variable" },
-        { id: "v", type: "variable" }
+        { id: "E=mc^2", type: "equation", latex: "\\(E=mc^2\\)" },
+        { id: "c", type: "constant", latex: "\\(c\\)" },
+        { id: "m", type: "variable", latex: "\\(m\\)" },
+        { id: "E", type: "variable", latex: "\\(E\\)" },
+        { id: "F=ma", type: "equation", latex: "\\(F=ma\\)" },
+        { id: "F", type: "variable", latex: "\\(F\\)" },
+        { id: "a", type: "variable", latex: "\\(a\\)" },
+        { id: "p=mv", type: "equation", latex: "\\(p=mv\\)" },
+        { id: "p", type: "variable", latex: "\\(p\\)" },
+        { id: "v", type: "variable", latex: "\\(v\\)" }
     ],
     links: [
         { source: "E=mc^2", target: "c" },
@@ -75,14 +75,16 @@ const node = svg.append("g")
                 .on("mouseover", handleMouseOver)
                 .on("mouseout", handleMouseOut);
 
-// Add labels to the nodes
+// Add labels to the nodes and render LaTeX
 const nodeLabels = svg.append("g")
-                      .selectAll("text")
+                      .selectAll("foreignObject")
                       .data(data.nodes)
-                      .enter().append("text")
-                      .attr("font-size", "10px")
-                      .attr("fill", "black")
-                      .text(d => d.id);
+                      .enter().append("foreignObject")
+                      .attr("width", 100)
+                      .attr("height", 50)
+                      .attr("x", d => d.x + 10)
+                      .attr("y", d => d.y - 5)
+                      .html(d => `<div class="latex">${d.latex}</div>`);
 
 // Update positions on each tick
 simulation.on("tick", () => {
@@ -95,7 +97,10 @@ simulation.on("tick", () => {
         .attr("cy", d => d.y);
 
     nodeLabels.attr("x", d => d.x + 10)
-              .attr("y", d => d.y + 3);
+              .attr("y", d => d.y - 5)
+              .html(d => `<div class="latex">${d.latex}</div>`);
+
+    MathJax.typeset(); // Render LaTeX equations
 });
 
 // Drag event functions
