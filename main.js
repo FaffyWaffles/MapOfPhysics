@@ -13,7 +13,16 @@ const svg = d3.select("#graph")
               }))
               .append("g");
 
-// Define the data structure
+// Add a toggle button for line equations
+const toggleButton = d3.select("#graph")
+                       .insert("button", ":first-child")
+                       .text("Toggle Line Equations")
+                       .on("click", toggleLineEquations);
+
+// Variable to track visibility of line equations
+let lineEquationsVisible = true;
+
+// Define the data structure with added derivations
 const data = {
     nodes: [
         { id: "E=mc^2", type: "equation", latex: "\\(E=mc^2\\)", description: "Energy-mass equivalence formula by Einstein" },
@@ -28,15 +37,15 @@ const data = {
         { id: "v", type: "variable", latex: "\\(v\\)", description: "Velocity" }
     ],
     links: [
-        { source: "E=mc^2", target: "c" },
-        { source: "E=mc^2", target: "m" },
-        { source: "E=mc^2", target: "E" },
-        { source: "F=ma", target: "F" },
-        { source: "F=ma", target: "m" },
-        { source: "F=ma", target: "a" },
-        { source: "p=mv", target: "p" },
-        { source: "p=mv", target: "m" },
-        { source: "p=mv", target: "v" }
+        { source: "E=mc^2", target: "c", derivation: "\\(c = \\sqrt{E/m}\\)" },
+        { source: "E=mc^2", target: "m", derivation: "\\(m = E/c^2\\)" },
+        { source: "E=mc^2", target: "E", derivation: "\\(E = mc^2\\)" },
+        { source: "F=ma", target: "F", derivation: "\\(F = ma\\)" },
+        { source: "F=ma", target: "m", derivation: "\\(m = F/a\\)" },
+        { source: "F=ma", target: "a", derivation: "\\(a = F/m\\)" },
+        { source: "p=mv", target: "p", derivation: "\\(p = mv\\)" },
+        { source: "p=mv", target: "m", derivation: "\\(m = p/v\\)" },
+        { source: "p=mv", target: "v", derivation: "\\(v = p/m\\)" }
     ]
 };
 
@@ -55,6 +64,15 @@ const link = svg.append("g")
                 .enter().append("line")
                 .attr("stroke-width", 2);
 
+// Add derivation labels to the links
+const linkLabels = svg.append("g")
+                      .selectAll("foreignObject")
+                      .data(data.links)
+                      .enter().append("foreignObject")
+                      .attr("width", 100)
+                      .attr("height", 50)
+                      .html(d => `<div class="latex">${d.derivation}</div>`);
+
 // Add labels to the nodes and render LaTeX
 const nodeLabels = svg.append("g")
                       .selectAll("foreignObject")
@@ -62,8 +80,6 @@ const nodeLabels = svg.append("g")
                       .enter().append("foreignObject")
                       .attr("width", 100)
                       .attr("height", 50)
-                      .attr("x", d => d.x + 10)
-                      .attr("y", d => d.y - 5)
                       .html(d => `<div class="latex">${d.latex}</div>`);
 
 // Add nodes (circles) to the SVG above the labels
@@ -105,6 +121,9 @@ simulation.on("tick", () => {
         .attr("y1", d => d.source.y)
         .attr("x2", d => d.target.x)
         .attr("y2", d => d.target.y);
+
+    linkLabels.attr("x", d => (d.source.x + d.target.x) / 2 - 50)
+              .attr("y", d => (d.source.y + d.target.y) / 2 - 25);
 
     node.attr("cx", d => d.x)
         .attr("cy", d => d.y);
@@ -154,6 +173,13 @@ function handleMouseOver(event, d) {
 
 function handleMouseOut() {
     d3.select("#tooltip").remove();
+}
+
+// Function to toggle line equations
+function toggleLineEquations() {
+    lineEquationsVisible = !lineEquationsVisible;
+    linkLabels.style("display", lineEquationsVisible ? "block" : "none");
+    MathJax.typesetPromise();
 }
 
 // Initial typeset
