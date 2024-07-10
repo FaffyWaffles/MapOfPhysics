@@ -1,6 +1,6 @@
 // Set up the SVG canvas dimensions
-const width = 800;
-const height = 600;
+const width = 1000;
+const height = 800;
 
 // Create an SVG element and append it to the div with id "graph"
 const svg = d3.select("#graph")
@@ -8,47 +8,59 @@ const svg = d3.select("#graph")
               .attr("width", width)
               .attr("height", height)
               .style("border", "1px solid black")
+              .style("display", "block")  // Added to center the canvas
+              .style("margin", "auto")    // Added to center the canvas
               .call(d3.zoom().on("zoom", (event) => {
                   svg.attr("transform", event.transform);
               }))
               .append("g");
 
-// Add a toggle button for line equations
-const toggleButton = d3.select("#graph")
-                       .insert("button", ":first-child")
-                       .text("Toggle Line Equations")
-                       .on("click", toggleLineEquations);
-
-// Variable to track visibility of line equations
-let lineEquationsVisible = true;
-
-// Define the data structure with added derivations
+// Define the data structure with added derivations and equivalent equation links
 const data = {
     nodes: [
-        { id: "E=mc^2", type: "equation", latex: "\\(E=mc^2\\)", description: "Energy-mass equivalence formula by Einstein" },
-        { id: "c", type: "constant", latex: "\\(c\\)", description: "Speed of light in a vacuum" },
-        { id: "m", type: "variable", latex: "\\(m\\)", description: "Mass of an object" },
-        { id: "E", type: "variable", latex: "\\(E\\)", description: "Energy" },
-        { id: "F=ma", type: "equation", latex: "\\(F=ma\\)", description: "Newton's second law of motion" },
-        { id: "F", type: "variable", latex: "\\(F\\)", description: "Force" },
-        { id: "a", type: "variable", latex: "\\(a\\)", description: "Acceleration" },
-        { id: "p=mv", type: "equation", latex: "\\(p=mv\\)", description: "Momentum formula" },
-        { id: "p", type: "variable", latex: "\\(p\\)", description: "Momentum" },
-        { id: "v", type: "variable", latex: "\\(v\\)", description: "Velocity" }
+        { id: "equation_E_mc2", type: "equation", latex: "\\(E=mc^2\\)", description: "Energy-mass equivalence formula" },
+        { id: "constant_c", type: "constant", latex: "\\(c\\)", description: "Speed of light in a vacuum" },
+        { id: "variable_m", type: "variable", latex: "\\(m\\)", description: "Mass of an object" },
+        { id: "variable_E", type: "variable", latex: "\\(E\\)", description: "Energy" },
+        { id: "equation_F_ma", type: "equation", latex: "\\(F=ma\\)", description: "Newton's second law of motion" },
+        { id: "variable_F", type: "variable", latex: "\\(F\\)", description: "Force" },
+        { id: "variable_a", type: "variable", latex: "\\(a\\)", description: "Acceleration" },
+        { id: "equation_p_mv", type: "equation", latex: "\\(p=mv\\)", description: "Momentum formula" },
+        { id: "variable_p", type: "variable", latex: "\\(p\\)", description: "Momentum" },
+        { id: "variable_v", type: "variable", latex: "\\(v\\)", description: "Velocity" },
+        // Adding derivation nodes
+        { id: "derivation_c_from_E_and_m", type: "derivation", latex: "\\(c = \\sqrt{\\frac{E}{m}}\\)", description: "Derivation of speed of light" },
+        { id: "derivation_m_from_E_and_c", type: "derivation", latex: "\\(m = \\frac{E}{c^2}\\)", description: "Derivation of mass from energy" },
+        { id: "derivation_m_from_F_and_a", type: "derivation", latex: "\\(m = \\frac{F}{a}\\)", description: "Derivation of mass from force" },
+        { id: "derivation_m_from_p_and_v", type: "derivation", latex: "\\(m = \\frac{p}{v}\\)", description: "Derivation of mass from momentum" },
+        { id: "derivation_a_from_F_and_m", type: "derivation", latex: "\\(a = \\frac{F}{m}\\)", description: "Derivation of acceleration" },
+        { id: "derivation_v_from_p_and_m", type: "derivation", latex: "\\(v = \\frac{p}{m}\\)", description: "Derivation of velocity" }
     ],
     links: [
-        { source: "E=mc^2", target: "c", derivation: "\\(c = \\sqrt{\\frac{E}{m}}\\)" },
-        { source: "E=mc^2", target: "m", derivation: "\\(m = \\frac{E}{c^2}\\)" },
-        { source: "E=mc^2", target: "E", derivation: "\\(E = mc^2\\)" },
-        { source: "F=ma", target: "F", derivation: "\\(F = ma\\)" },
-        { source: "F=ma", target: "m", derivation: "\\(m = \\frac{F}{a}\\)" },
-        { source: "F=ma", target: "a", derivation: "\\(a = \\frac{F}{m}\\)" },
-        { source: "p=mv", target: "p", derivation: "\\(p = mv\\)" },
-        { source: "p=mv", target: "m", derivation: "\\(m = \\frac{p}{v}\\)" },
-        { source: "p=mv", target: "v", derivation: "\\(v = \\frac{p}{m}\\)" }
+        { source: "equation_E_mc2", target: "derivation_c_from_E_and_m" },
+        { source: "equation_E_mc2", target: "derivation_m_from_E_and_c" },
+        { source: "equation_E_mc2", target: "variable_E" },
+        { source: "derivation_c_from_E_and_m", target: "constant_c" },
+        { source: "derivation_m_from_E_and_c", target: "variable_m" },
+        { source: "equation_F_ma", target: "variable_F" },
+        { source: "equation_F_ma", target: "derivation_m_from_F_and_a" },
+        { source: "equation_F_ma", target: "derivation_a_from_F_and_m" },
+        { source: "derivation_m_from_F_and_a", target: "variable_m" },
+        { source: "derivation_a_from_F_and_m", target: "variable_a" },
+        { source: "equation_p_mv", target: "variable_p" },
+        { source: "equation_p_mv", target: "derivation_m_from_p_and_v" },
+        { source: "equation_p_mv", target: "derivation_v_from_p_and_m" },
+        { source: "derivation_m_from_p_and_v", target: "variable_m" },
+        { source: "derivation_v_from_p_and_m", target: "variable_v" },
+        // Adding equivalent equation links
+        { source: "derivation_a_from_F_and_m", target: "derivation_m_from_F_and_a" },
+        { source: "derivation_m_from_F_and_a", target: "derivation_a_from_F_and_m" },
+        { source: "derivation_m_from_p_and_v", target: "derivation_v_from_p_and_m" },
+        { source: "derivation_v_from_p_and_m", target: "derivation_m_from_p_and_v" },
+        { source: "derivation_c_from_E_and_m", target: "derivation_m_from_E_and_c" },
+        { source: "derivation_m_from_E_and_c", target: "derivation_c_from_E_and_m" }
     ]
 };
-
 
 // Create a force simulation
 const simulation = d3.forceSimulation(data.nodes)
@@ -65,15 +77,6 @@ const link = svg.append("g")
                 .enter().append("line")
                 .attr("stroke-width", 2);
 
-// Add derivation labels to the links
-const linkLabels = svg.append("g")
-                      .selectAll("foreignObject")
-                      .data(data.links)
-                      .enter().append("foreignObject")
-                      .attr("width", 100)
-                      .attr("height", 50)
-                      .html(d => `<div class="latex">${d.derivation}</div>`);
-
 // Add labels to the nodes and render LaTeX
 const nodeLabels = svg.append("g")
                       .selectAll("foreignObject")
@@ -81,7 +84,7 @@ const nodeLabels = svg.append("g")
                       .enter().append("foreignObject")
                       .attr("width", 100)
                       .attr("height", 50)
-                      .html(d => `<div class="latex">${d.latex}</div>`);
+                      .html(d => `<div class="latex">${d.latex}</div>`); // Keeping LaTeX styling simple
 
 // Add nodes (circles) to the SVG above the labels
 const node = svg.append("g")
@@ -92,7 +95,8 @@ const node = svg.append("g")
                 .enter().append("circle")
                 .attr("r", 10)
                 .attr("fill", d => {
-                    if (d.type === "equation") return "red";
+                    if (d.type === "equation") return "red"; // Main equation nodes in red
+                    if (d.type === "derivation") return "yellow"; // New color for derivation nodes
                     if (d.type === "variable") return "blue";
                     if (d.type === "constant") return "green";
                 })
@@ -122,9 +126,6 @@ simulation.on("tick", () => {
         .attr("y1", d => d.source.y)
         .attr("x2", d => d.target.x)
         .attr("y2", d => d.target.y);
-
-    linkLabels.attr("x", d => (d.source.x + d.target.x) / 2 - 50)
-              .attr("y", d => (d.source.y + d.target.y) / 2 - 25);
 
     node.attr("cx", d => d.x)
         .attr("cy", d => d.y);
@@ -174,13 +175,6 @@ function handleMouseOver(event, d) {
 
 function handleMouseOut() {
     d3.select("#tooltip").remove();
-}
-
-// Function to toggle line equations
-function toggleLineEquations() {
-    lineEquationsVisible = !lineEquationsVisible;
-    linkLabels.style("display", lineEquationsVisible ? "block" : "none");
-    MathJax.typesetPromise();
 }
 
 // Initial typeset
