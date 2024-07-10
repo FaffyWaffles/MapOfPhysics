@@ -37,17 +37,18 @@ const data = {
         { id: "v", type: "variable", latex: "\\(v\\)", description: "Velocity" }
     ],
     links: [
-        { source: "E=mc^2", target: "c", derivation: "\\(c = \\sqrt{E/m}\\)" },
-        { source: "E=mc^2", target: "m", derivation: "\\(m = E/c^2\\)" },
+        { source: "E=mc^2", target: "c", derivation: "\\(c = \\sqrt{\\frac{E}{m}}\\)" },
+        { source: "E=mc^2", target: "m", derivation: "\\(m = \\frac{E}{c^2}\\)" },
         { source: "E=mc^2", target: "E", derivation: "\\(E = mc^2\\)" },
         { source: "F=ma", target: "F", derivation: "\\(F = ma\\)" },
-        { source: "F=ma", target: "m", derivation: "\\(m = F/a\\)" },
-        { source: "F=ma", target: "a", derivation: "\\(a = F/m\\)" },
+        { source: "F=ma", target: "m", derivation: "\\(m = \\frac{F}{a}\\)" },
+        { source: "F=ma", target: "a", derivation: "\\(a = \\frac{F}{m}\\)" },
         { source: "p=mv", target: "p", derivation: "\\(p = mv\\)" },
-        { source: "p=mv", target: "m", derivation: "\\(m = p/v\\)" },
-        { source: "p=mv", target: "v", derivation: "\\(v = p/m\\)" }
+        { source: "p=mv", target: "m", derivation: "\\(m = \\frac{p}{v}\\)" },
+        { source: "p=mv", target: "v", derivation: "\\(v = \\frac{p}{m}\\)" }
     ]
 };
+
 
 // Create a force simulation
 const simulation = d3.forceSimulation(data.nodes)
