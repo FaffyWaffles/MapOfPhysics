@@ -64,8 +64,8 @@ const data = {
 
 // Create a force simulation
 const simulation = d3.forceSimulation(data.nodes)
-                     .force("link", d3.forceLink(data.links).id(d => d.id).distance(100))
-                     .force("charge", d3.forceManyBody().strength(-300))
+                     .force("link", d3.forceLink(data.links).id(d => d.id).distance(75))
+                     .force("charge", d3.forceManyBody().strength(-500))
                      .force("center", d3.forceCenter(width / 2, height / 2));
 
 // Add links (lines) to the SVG
@@ -118,7 +118,7 @@ function debounce(func, wait) {
 }
 
 // Debounced MathJax typeset function
-const debouncedTypeset = debounce(() => MathJax.typesetPromise(), 500);
+const debouncedTypeset = debounce(() => MathJax.typesetPromise(), 1000);
 
 // Update positions on each tick
 simulation.on("tick", () => {
