@@ -9,3 +9,8 @@ h1 {
 .latex {
     font-size: 12px;
 }
+
+.selected {
+    stroke: orange;
+    stroke-width: 3px;
+}
