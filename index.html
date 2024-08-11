@@ -8,9 +8,32 @@
     <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
 </head>
 <body>
+
     <h1>Map Of Physics</h1>
+    <!-- Sliders for controlling force simulation parameters -->
+    <label for="chargeStrength">Charge Strength: </label>
+    <input type="range" id="chargeStrength" min="-1000" max="0" value="-500" step="10">
+    <br>
+    <label for="linkDistance">Link Distance: </label>
+    <input type="range" id="linkDistance" min="0" max="1000" value="75" step="1">
+    <br>
+    <!-- New toggle button for derivations -->
+    <button id="toggle-derivations">Toggle Derivations</button>
+    <br>
     <div id="graph"></div>
+
+    <!-- Load D3.js library -->
     <script src="https://d3js.org/d3.v7.min.js"></script>
+
+    <!-- Load the data first -->
+    <script src="data.js"></script>
+
+    <!-- Load the main script -->
     <script src="main.js"></script>
+
+    <!-- Script to connect the toggle button to the toggleDerivations function -->
+    <script>
+        document.getElementById("toggle-derivations").addEventListener("click", toggleDerivations);
+    </script>
 </body>
 </html>
