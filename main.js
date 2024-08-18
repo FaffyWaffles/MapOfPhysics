@@ -17,6 +17,20 @@ const svg = d3.select("#graph")
     }))
     .append("g");
 
+    svg.append("defs").append("marker")
+    .attr("id", "arrowhead")
+    .attr("viewBox", "-0 -5 10 10")
+    .attr("refX", 10)  // Increased to push the arrow slightly away from the node
+    .attr("refY", 0)
+    .attr("orient", "auto")
+    .attr("markerWidth", 8)  // Reduced from 13
+    .attr("markerHeight", 8)  // Reduced from 13
+    .attr("xoverflow", "visible")
+    .append("svg:path")
+    .attr("d", "M 0,-3 L 6 ,0 L 0,3")  // Adjusted path for a smaller triangle
+    .attr("fill", "orange")
+    .style("stroke", "none");
+
 // Setup SVG groups for layering
 const linkGroup = svg.append("g").attr("class", "links");
 const labelGroup = svg.append("g").attr("class", "labels");
@@ -62,83 +76,10 @@ function handleClick(event, d) {
     if (!selected) {
         d3.select(this).classed("selected", true);
         selectionDisplay.text(`Selected: ${d.description || d.latex}`);
-
-        if (d.type === "equation" && d.derivations) {
-            addDerivations(d);
-        }
     } else {
         selectionDisplay.text("No node selected");
-        removeDerivations(d);
     }
     updateCounts();
-}
-
-// Add derivation nodes and links
-function addDerivations(d) {
-    const derivationNodesExist = simulation.nodes().some(node => 
-        d.derivations.some(derivation => derivation.id === node.id)
-    );
-
-    if (!derivationNodesExist) {
-        const centerX = d.x;
-        const centerY = d.y;
-        const radius = 150;
-        const angleStep = (2 * Math.PI) / d.derivations.length;
-
-        const newNodes = [];
-        const newLinks = [];
-
-        d.derivations.forEach((derivation, index) => {
-            const angle = index * angleStep;
-            const newX = centerX + radius * Math.cos(angle);
-            const newY = centerY + radius * Math.sin(angle);
-
-            const newNode = {
-                ...derivation,
-                x: newX,
-                y: newY,
-                fx: newX,  // Fix the x position initially
-                fy: newY,  // Fix the y position initially
-                type: "derivation",
-                parent: d.id
-            };
-
-            const newLink = { source: d.id, target: newNode.id, isDerivationLink: true };
-
-            newNodes.push(newNode);
-            newLinks.push(newLink);
-        });
-
-        // Add new nodes and links to the simulation
-        simulation.nodes([...simulation.nodes(), ...newNodes]);
-        simulation.force("link").links([...simulation.force("link").links(), ...newLinks]);
-
-        // Update the graph
-        updateGraph();
-
-        // Gradually release the fixed positions
-        setTimeout(() => {
-            newNodes.forEach(node => {
-                node.fx = null;
-                node.fy = null;
-            });
-            simulation.alpha(0.1).restart();
-        }, 1);  // Adjust this delay as needed
-    }
-}
-
-// Remove derivation nodes and links
-function removeDerivations(d) {
-    const nodes = simulation.nodes();
-    const links = simulation.force("link").links();
-
-    const nodesToRemove = nodes.filter(node => node.parent === d.id);
-    const linksToRemove = links.filter(link => link.source.id === d.id && link.target.parent === d.id);
-
-    simulation.nodes(nodes.filter(node => !nodesToRemove.includes(node)));
-    simulation.force("link").links(links.filter(link => !linksToRemove.includes(link)));
-
-    updateGraph();
 }
 
 // Update the graph based on current simulation data
@@ -150,10 +91,11 @@ function updateGraph() {
     link.exit().remove();
 
     link.enter().append("line")
-        .attr("stroke", "#999")
+        .merge(link)
+        .attr("stroke", d => d.visualProperties ? d.visualProperties.color : "#999")
         .attr("stroke-opacity", 0.6)
-        .attr("stroke-width", 2)
-        .merge(link);
+        .attr("stroke-width", d => d.visualProperties ? d.visualProperties.strokeWidth : 2)
+        .attr("marker-end", d => d.visualProperties && d.visualProperties.arrowhead ? "url(#arrowhead)" : null);
 
     // Update nodes
     const node = nodeGroup.selectAll("circle")
@@ -182,9 +124,9 @@ function updateGraph() {
     label.exit().remove();
 
     label.enter().append("foreignObject")
-        .attr("width", 100)
-        .attr("height", 50)
-        .html(d => `<div class="latex">${d.latex}</div>`)
+        .attr("width", 200)
+        .attr("height", 100)
+        .html(d => `<div class="latex">${d.latex || d.description}</div>`)
         .merge(label);
 
     // Restart the simulation
@@ -197,7 +139,6 @@ function updateGraph() {
 function getNodeColor(d) {
     const colors = {
         "equation": "red",
-        "derivation": "yellow",
         "variable": "blue",
         "constant": "green"
     };
@@ -206,7 +147,7 @@ function getNodeColor(d) {
 
 // Drag event handlers
 function dragstarted(event, d) {
-    if (!event.active) simulation.alphaTarget(0.3).restart();
+    if (!event.active) simulation.alphaTarget(1).restart();
     d.fx = d.x;
     d.fy = d.y;
     d3.select(this).raise().attr("stroke", "black");
@@ -218,7 +159,7 @@ function dragged(event, d) {
 }
 
 function dragended(event, d) {
-    if (!event.active) simulation.alphaTarget(0.1); // Changed from 0 to 0.1
+    if (!event.active) simulation.alphaTarget(.01);
     d.fx = null;
     d.fy = null;
     d3.select(this).attr("stroke", null);
@@ -226,7 +167,7 @@ function dragended(event, d) {
     // Delay the MathJax typesetting
     setTimeout(() => {
         debouncedTypeset();
-    }, 500); // Adjust this delay as needed
+    }, 500);
 }
 
 // Tooltip handlers
