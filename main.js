@@ -47,9 +47,6 @@ function debounce(func, wait) {
     };
 }
 
-// Debounced MathJax typeset function
-const debouncedTypeset = debounce(() => MathJax.typesetPromise(), 1000);
-
 // Update node and link counts
 function updateCounts() {
     const nodeCount = simulation.nodes().length;
@@ -85,7 +82,7 @@ function addDerivations(d) {
     if (!derivationNodesExist) {
         const centerX = d.x;
         const centerY = d.y;
-        const radius = 100;
+        const radius = 150;
         const angleStep = (2 * Math.PI) / d.derivations.length;
 
         const newNodes = [];
@@ -192,7 +189,7 @@ function updateGraph() {
 
     // Restart the simulation
     simulation.alpha(1).restart();
-    MathJax.typesetPromise();
+    debouncedTypeset();
     updateCounts();
 }
 
@@ -212,8 +209,7 @@ function dragstarted(event, d) {
     if (!event.active) simulation.alphaTarget(0.3).restart();
     d.fx = d.x;
     d.fy = d.y;
-    d3.selectAll("circle").on("mouseover", null).on("mouseout", null);
-    d3.select("#tooltip").remove();
+    d3.select(this).raise().attr("stroke", "black");
 }
 
 function dragged(event, d) {
@@ -222,11 +218,15 @@ function dragged(event, d) {
 }
 
 function dragended(event, d) {
-    if (!event.active) simulation.alphaTarget(0);
+    if (!event.active) simulation.alphaTarget(0.1); // Changed from 0 to 0.1
     d.fx = null;
     d.fy = null;
-    d3.selectAll("circle").on("mouseover", handleMouseOver).on("mouseout", handleMouseOut);
-    MathJax.typesetPromise();
+    d3.select(this).attr("stroke", null);
+    
+    // Delay the MathJax typesetting
+    setTimeout(() => {
+        debouncedTypeset();
+    }, 500); // Adjust this delay as needed
 }
 
 // Tooltip handlers
@@ -259,9 +259,18 @@ simulation.on("tick", () => {
     labelGroup.selectAll("foreignObject")
         .attr("x", d => d.x + 10)
         .attr("y", d => d.y - 5);
-
-    debouncedTypeset();
 });
+
+// Separate function for updating MathJax
+function updateMathJax() {
+    labelGroup.selectAll("foreignObject")
+        .each(function() {
+            MathJax.typesetPromise([this]).catch((err) => console.log(err.message));
+        });
+}
+
+// Debounced MathJax typeset function
+const debouncedTypeset = debounce(updateMathJax, 300);
 
 // Initialize the graph
 function initializeGraph(nodes, links) {
