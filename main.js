@@ -4,6 +4,8 @@
 const width = 1000;
 const height = 800;
 
+let isDragging = false;
+
 // Create an SVG element and append it to the div with id "graph"
 const svg = d3.select("#graph")
     .append("svg")
@@ -62,11 +64,11 @@ function debounce(func, wait) {
 }
 
 // Update node and link counts
-function updateCounts() {
-    const nodeCount = simulation.nodes().length;
-    const linkCount = simulation.force("link").links().length;
-    console.log(`Nodes: ${nodeCount}, Links: ${linkCount}`);
-}
+// function updateCounts() {
+//     const nodeCount = simulation.nodes().length;
+//     const linkCount = simulation.force("link").links().length;
+//     console.log(`Nodes: ${nodeCount}, Links: ${linkCount}`);
+// }
 
 // Handle node click events
 function handleClick(event, d) {
@@ -79,7 +81,7 @@ function handleClick(event, d) {
     } else {
         selectionDisplay.text("No node selected");
     }
-    updateCounts();
+    // updateCounts();
 }
 
 // Update the graph based on current simulation data
@@ -132,7 +134,7 @@ function updateGraph() {
     // Restart the simulation
     simulation.alpha(1).restart();
     debouncedTypeset();
-    updateCounts();
+    // updateCounts();
 }
 
 // Get node color based on type
@@ -147,6 +149,7 @@ function getNodeColor(d) {
 
 // Drag event handlers
 function dragstarted(event, d) {
+    isDragging = true;
     if (!event.active) simulation.alphaTarget(1).restart();
     d.fx = d.x;
     d.fy = d.y;
@@ -159,7 +162,8 @@ function dragged(event, d) {
 }
 
 function dragended(event, d) {
-    if (!event.active) simulation.alphaTarget(.01);
+    isDragging = false;
+    if (!event.active) simulation.alphaTarget(0);
     d.fx = null;
     d.fy = null;
     d3.select(this).attr("stroke", null);
@@ -167,18 +171,20 @@ function dragended(event, d) {
     // Delay the MathJax typesetting
     setTimeout(() => {
         debouncedTypeset();
-    }, 500);
+    }, 10000);
 }
 
 // Tooltip handlers
 function handleMouseOver(event, d) {
-    svg.append("text")
-        .attr("x", d.x + 15)
-        .attr("y", d.y - 10)
-        .attr("id", "tooltip")
-        .attr("font-size", "12px")
-        .attr("fill", "black")
-        .text(d.description);
+    if (!isDragging) {
+        svg.append("text")
+            .attr("x", d.x + 15)
+            .attr("y", d.y - 10)
+            .attr("id", "tooltip")
+            .attr("font-size", "12px")
+            .attr("fill", "black")
+            .text(d.description);
+    }
 }
 
 function handleMouseOut() {

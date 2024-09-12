@@ -41,7 +41,29 @@ const variables = [
     { id: "variable_electricPotentialEnergy", type: "variable", latex: "\\(U\\)", description: "Electric potential energy", syntax: "U" },
     { id: "variable_area", type: "variable", latex: "\\(A\\)", description: "Area", syntax: "A" },
     { id: "variable_capacitance", type: "variable", latex: "\\(C\\)", description: "Capacitance", syntax: "C" },
-    { id: "variable_currentDensity", type: "variable", latex: "\\(J\\)", description: "Current density", syntax: "J" }
+    { id: "variable_currentDensity", type: "variable", latex: "\\(J\\)", description: "Current density", syntax: "J" },
+    { id: "variable_position", type: "variable", latex: "\\(x\\)", description: "Position", syntax: "x" },
+    { id: "variable_power", type: "variable", latex: "\\(P\\)", description: "Power", syntax: "P" },
+    { id: "variable_magneticFlux", type: "variable", latex: "\\(\\Phi\\)", description: "Magnetic flux", syntax: "Φ" },
+    { id: "variable_fluidDensity", type: "variable", latex: "\\(\\rho\\)", description: "Fluid density", syntax: "ρ" },
+    { id: "variable_thermalConductivity", type: "variable", latex: "\\(k\\)", description: "Thermal conductivity", syntax: "k" },
+    { id: "variable_numberOfParticles", type: "variable", latex: "\\(N\\)", description: "Number of particles", syntax: "N" },
+    { id: "variable_decayConstant", type: "variable", latex: "\\(\\lambda\\)", description: "Decay constant", syntax: "λ" },
+    { id: "variable_concentration", type: "variable", latex: "\\([A]\\)", description: "Concentration of substance A", syntax: "[A]" },
+    { id: "variable_stress", type: "variable", latex: "\\(\\sigma\\)", description: "Stress", syntax: "σ" },
+    { id: "variable_strain", type: "variable", latex: "\\(\\varepsilon\\)", description: "Strain", syntax: "ε" },
+    { id: "variable_youngsModulus", type: "variable", latex: "\\(E\\)", description: "Young's modulus", syntax: "E" },
+    { id: "variable_waveDisplacement", type: "variable", latex: "\\(y\\)", description: "Wave displacement", syntax: "y" },
+    { id: "variable_heatCapacity", type: "variable", latex: "\\(C\\)", description: "Heat capacity", syntax: "C" },
+    { id: "variable_internalEnergy", type: "variable", latex: "\\(U\\)", description: "Internal energy", syntax: "U" },
+    { id: "variable_gibbsFreeEnergy", type: "variable", latex: "\\(G\\)", description: "Gibbs free energy", syntax: "G" },
+    { id: "variable_helmholtzFreeEnergy", type: "variable", latex: "\\(F\\)", description: "Helmholtz free energy", syntax: "F" },
+    { id: "variable_enthalpy", type: "variable", latex: "\\(H\\)", description: "Enthalpy", syntax: "H" },
+    { id: "variable_chemicalPotential", type: "variable", latex: "\\(\\mu\\)", description: "Chemical potential", syntax: "μ" },
+    { id: "variable_numberParticles", type: "variable", latex: "\\(N\\)", description: "Number of particles", syntax: "N" },
+    { id: "variable_probabilityState", type: "variable", latex: "\\(p_i\\)", description: "Probability of microstate i", syntax: "p_i" },
+    { id: "variable_partition_function", type: "variable", latex: "\\(Z\\)", description: "Partition function", syntax: "Z" },
+    { id: "constant_gasConstant", type: "constant", latex: "\\(R\\)", description: "Gas constant", syntax: "R" }
 ];
 
 // Define equations
@@ -173,11 +195,11 @@ const equations = [
         variables: ["variable_electricFieldStrength", "variable_chargeDensity", "constant_permittivityOfFreeSpace"]
     },
     {
-        id: "equation_WaveEquation",
+        id: "equation_WaveEquation3D",
         type: "equation",
         latex: "\\(\\frac{\\partial^2 \\psi}{\\partial t^2} = v^2 \\nabla^2 \\psi\\)",
-        description: "Wave Equation",
-        variables: ["variable_velocity", "variable_time", "variable_waveFunction"]
+        description: "3D Wave Equation",
+        variables: ["variable_waveFunction", "variable_time", "variable_velocity"]
     },
     {
         id: "equation_ElectricFlux",
@@ -239,7 +261,7 @@ const equations = [
         id: "equation_FaradayLaw",
         type: "equation",
         latex: "\\(\\nabla \\times E = -\\frac{\\partial B}{\\partial t}\\)",
-        description: "Faraday's Law of Induction",
+        description: "Maxwell-Faraday's Law of Induction",
         variables: ["variable_electricFieldStrength", "variable_magneticFieldStrength", "variable_time"]
     },
     {
@@ -248,6 +270,181 @@ const equations = [
         latex: "\\(\\nabla \\times B = \\mu_0 J + \\mu_0 \\varepsilon_0 \\frac{\\partial E}{\\partial t}\\)",
         description: "Ampère-Maxwell Law",
         variables: ["variable_magneticFieldStrength", "variable_currentDensity", "variable_electricFieldStrength", "variable_time", "constant_permeabilityOfFreeSpace", "constant_permittivityOfFreeSpace"]
+    },
+    { 
+        id: "equation_VelocityPosition", 
+        type: "equation", 
+        latex: "\\(v = \\frac{dx}{dt}\\)", 
+        description: "Velocity as derivative of position", 
+        variables: ["variable_velocity", "variable_position", "variable_time"]
+    },
+    { 
+        id: "equation_AccelerationVelocity", 
+        type: "equation", 
+        latex: "\\(a = \\frac{dv}{dt} = \\frac{d^2x}{dt^2}\\)", 
+        description: "Acceleration as derivative of velocity", 
+        variables: ["variable_acceleration", "variable_velocity", "variable_position", "variable_time"]
+    },
+    { 
+        id: "equation_ForceMomentum", 
+        type: "equation", 
+        latex: "\\(F = \\frac{dp}{dt}\\)", 
+        description: "Force as rate of change of momentum", 
+        variables: ["variable_force", "variable_momentum", "variable_time"]
+    },
+    { 
+        id: "equation_PowerEnergy", 
+        type: "equation", 
+        latex: "\\(P = \\frac{dE}{dt}\\)", 
+        description: "Power as rate of change of energy", 
+        variables: ["variable_power", "variable_energy", "variable_time"]
+    },
+    { 
+        id: "equation_CurrentCharge", 
+        type: "equation", 
+        latex: "\\(I = \\frac{dQ}{dt}\\)", 
+        description: "Current as rate of change of charge", 
+        variables: ["variable_current", "variable_electricCharge", "variable_time"]
+    },
+    { 
+        id: "equation_CapacitanceCurrent", 
+        type: "equation", 
+        latex: "\\(I = C \\frac{dV}{dt}\\)", 
+        description: "Current in a capacitor", 
+        variables: ["variable_current", "variable_capacitance", "variable_voltage", "variable_time"]
+    },
+    { 
+        id: "equation_FaradayInduction", 
+        type: "equation", 
+        latex: "\\(\\varepsilon = -\\frac{d\\Phi}{dt}\\)", 
+        description: "Faraday's law of induction", 
+        variables: ["variable_voltage", "variable_magneticFlux", "variable_time"]
+    },
+    { 
+        id: "equation_ContinuityFluid", 
+        type: "equation", 
+        latex: "\\(\\frac{\\partial \\rho}{\\partial t} + \\nabla \\cdot (\\rho v) = 0\\)", 
+        description: "Continuity equation in fluid dynamics", 
+        variables: ["variable_fluidDensity", "variable_time", "variable_velocity"]
+    },
+    { 
+        id: "equation_FouriersLaw", 
+        type: "equation", 
+        latex: "\\(q = -k \\frac{dT}{dx}\\)", 
+        description: "Fourier's Law of heat conduction", 
+        variables: ["variable_heat", "variable_thermalConductivity", "variable_temperature", "variable_position"]
+    },
+    { 
+        id: "equation_RadioactiveDecay", 
+        type: "equation", 
+        latex: "\\(\\frac{dN}{dt} = -\\lambda N\\)", 
+        description: "Radioactive decay equation", 
+        variables: ["variable_numberOfParticles", "variable_time", "variable_decayConstant"]
+    },
+    { 
+        id: "equation_ChemicalReactionRate", 
+        type: "equation", 
+        latex: "\\(\\text{rate} = \\frac{d[A]}{dt}\\)", 
+        description: "Rate of chemical reaction", 
+        variables: ["variable_concentration", "variable_time"]
+    },
+    { 
+        id: "equation_HookesLawContinuous", 
+        type: "equation", 
+        latex: "\\(\\sigma = E \\frac{d\\varepsilon}{dx}\\)", 
+        description: "Hooke's Law for continuous media", 
+        variables: ["variable_stress", "variable_youngsModulus", "variable_strain", "variable_position"]
+    },
+    { 
+        id: "equation_WaveEquation", 
+        type: "equation", 
+        latex: "\\(\\frac{\\partial^2 y}{\\partial t^2} = v^2 \\frac{\\partial^2 y}{\\partial x^2}\\)", 
+        description: "Wave equation", 
+        variables: ["variable_waveDisplacement", "variable_time", "variable_velocity", "variable_position"]
+    },
+    { 
+        id: "equation_SchrodingerEquation", 
+        type: "equation", 
+        latex: "\\(i\\hbar \\frac{\\partial \\psi}{\\partial t} = \\hat{H}\\psi\\)", 
+        description: "Schrödinger equation in quantum mechanics", 
+        variables: ["variable_waveFunction", "variable_time", "constant_planckConstant"]
+    },
+    { 
+        id: "equation_EntropyStatisticalMechanics", 
+        type: "equation", 
+        latex: "\\(S = k_B \\ln \\Omega\\)", 
+        description: "Boltzmann's entropy formula", 
+        variables: ["variable_entropy", "constant_boltzmannConstant", "variable_numberOfMicrostates"]
+    },
+    { 
+        id: "equation_EntropyThermodynamics", 
+        type: "equation", 
+        latex: "\\(dS = \\frac{dQ_{rev}}{T}\\)", 
+        description: "Entropy change in reversible process", 
+        variables: ["variable_entropy", "variable_heat", "variable_temperature"]
+    },
+    { 
+        id: "equation_EntropyChange", 
+        type: "equation", 
+        latex: "\\(\\Delta S = C \\ln \\frac{T_2}{T_1}\\)", 
+        description: "Entropy change for ideal gas", 
+        variables: ["variable_entropy", "variable_heatCapacity", "variable_temperature"]
+    },
+    { 
+        id: "equation_EntropyMixing", 
+        type: "equation", 
+        latex: "\\(\\Delta S_{mix} = -nR(x_A \\ln x_A + x_B \\ln x_B)\\)", 
+        description: "Entropy of mixing for ideal solution", 
+        variables: ["variable_entropy", "variable_numberOfMoles", "constant_gasConstant"]
+    },
+    { 
+        id: "equation_GibbsFreeEnergy", 
+        type: "equation", 
+        latex: "\\(G = H - TS\\)", 
+        description: "Gibbs free energy", 
+        variables: ["variable_gibbsFreeEnergy", "variable_enthalpy", "variable_temperature", "variable_entropy"]
+    },
+    { 
+        id: "equation_HelmholtzFreeEnergy", 
+        type: "equation", 
+        latex: "\\(F = U - TS\\)", 
+        description: "Helmholtz free energy", 
+        variables: ["variable_helmholtzFreeEnergy", "variable_internalEnergy", "variable_temperature", "variable_entropy"]
+    },
+    { 
+        id: "equation_EntropyMaxwellRelation", 
+        type: "equation", 
+        latex: "\\(\\left(\\frac{\\partial S}{\\partial V}\\right)_T = \\left(\\frac{\\partial P}{\\partial T}\\right)_V\\)", 
+        description: "Maxwell relation for entropy", 
+        variables: ["variable_entropy", "variable_volume", "variable_temperature", "variable_pressure"]
+    },
+    { 
+        id: "equation_EntropyInformationTheory", 
+        type: "equation", 
+        latex: "\\(S = -k_B \\sum_i p_i \\ln p_i\\)", 
+        description: "Shannon entropy (information theory)", 
+        variables: ["variable_entropy", "constant_boltzmannConstant", "variable_probabilityState"]
+    },
+    { 
+        id: "equation_EntropyPartitionFunction", 
+        type: "equation", 
+        latex: "\\(S = k_B \\left(\\ln Z + T \\frac{\\partial \\ln Z}{\\partial T}\\right)\\)", 
+        description: "Entropy from partition function", 
+        variables: ["variable_entropy", "constant_boltzmannConstant", "variable_temperature", "variable_partition_function"]
+    },
+    { 
+        id: "equation_EntropyChemicalPotential", 
+        type: "equation", 
+        latex: "\\(dS = \\frac{1}{T}dU + \\frac{P}{T}dV - \\frac{\\mu}{T}dN\\)", 
+        description: "Entropy differential with chemical potential", 
+        variables: ["variable_entropy", "variable_temperature", "variable_internalEnergy", "variable_pressure", "variable_volume", "variable_chemicalPotential", "variable_numberParticles"]
+    },
+    { 
+        id: "equation_EntropyProduction", 
+        type: "equation", 
+        latex: "\\(\\frac{dS}{dt} \\geq \\frac{dQ}{dt T}\\)", 
+        description: "Entropy production inequality (Second Law)", 
+        variables: ["variable_entropy", "variable_time", "variable_heat", "variable_temperature"]
     }
 ];
 
@@ -263,18 +460,18 @@ const equationRelationships = [
             strokeWidth: 3,
             arrowhead: true
         }
-    },
-    {
-        source: "equation_NewtonSecondLaw",
-        target: "equation_LinearMomentum",
-        type: "derivative_relationship",
-        description: "F = dp/dt (Force is rate of change of momentum)",
-        visualProperties: {
-            color: "green",
-            strokeWidth: 2,
-            arrowhead: true
-        }
-    },
+    }
+    // {
+    //     source: "equation_NewtonSecondLaw",
+    //     target: "equation_LinearMomentum",
+    //     type: "derivative_relationship",
+    //     description: "F = dp/dt (Force is rate of change of momentum)",
+    //     visualProperties: {
+    //         color: "green",
+    //         strokeWidth: 2,
+    //         arrowhead: true
+    //     }
+    // },
 ];
 
 // Create nodes array
